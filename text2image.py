@@ -48,8 +48,16 @@ def main():
             # Perform image to text conversion with LayoutLM Document QA
             if st.button("Convert Image to Text"):
                 result = image_to_text_with_layoutlm(image_content, question)
-                st.subheader("Text Extracted:")
-                st.write(result)
+
+                # Extract relevant information from the JSON response
+                if 'answers' in result and result['answers']:
+                    extracted_text = result['answers'][0]['text']
+                    confidence = result['answers'][0]['confidence']
+                    st.subheader("Text Extracted:")
+                    st.write(f"Extracted Text: {extracted_text}")
+                    st.write(f"Confidence: {confidence}")
+                else:
+                    st.warning("No answers found.")
         except Exception as e:
             st.error(f"An error occurred: {str(e)}")
 
