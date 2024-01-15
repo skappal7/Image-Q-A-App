@@ -49,11 +49,7 @@ def main():
             if st.button("Convert Image to Text"):
                 result = image_to_text_with_layoutlm(image_content, question)
 
-                # Print the full JSON response for debugging
-                st.write("Full JSON Response:")
-                st.write(result)
-
-                # Display the relevant information from the JSON response
+                # Display the extracted answers
                 if 'answers' in result:
                     answers = result['answers']
                     if answers:
