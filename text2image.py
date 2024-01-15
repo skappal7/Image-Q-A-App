@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 import base64
 from PIL import Image
+import io
 
 API_URL = "https://api-inference.huggingface.co/models/impira/layoutlm-document-qa"
 headers = {"Authorization": "Bearer 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"}
@@ -16,22 +17,17 @@ def query(payload):
     except Exception as e:
         return f"An unexpected error occurred: {str(e)}"
 
-def image_to_text_with_layoutlm(image_path, question):
+def image_to_text_with_layoutlm(image_content, question):
     try:
-        with open(image_path, "rb") as f:
-            img = f.read()
-
         payload = {
             "inputs": {
-                "image": base64.b64encode(img).decode("utf-8"),
+                "image": base64.b64encode(image_content).decode("utf-8"),
                 "question": question
             }
         }
 
         output = query(payload)
         return output
-    except FileNotFoundError:
-        return f"Image file not found: {image_path}"
     except Exception as e:
         return f"An error occurred: {str(e)}"
 
@@ -42,15 +38,20 @@ def main():
     question = st.text_input("Enter a question about the image:")
 
     if uploaded_file is not None and question:
-        # Display the selected image
-        image = Image.open(uploaded_file)
-        st.image(image, caption="Uploaded Image", use_column_width=True)
+        try:
+            # Read the image file content using BytesIO
+            image_content = uploaded_file.read()
+            # Display the selected image
+            image = Image.open(io.BytesIO(image_content))
+            st.image(image, caption="Uploaded Image", use_column_width=True)
 
-        # Perform image to text conversion with LayoutLM Document QA
-        if st.button("Convert Image to Text"):
-            result = image_to_text_with_layoutlm(uploaded_file.name, question)
-            st.subheader("Text Extracted:")
-            st.write(result)
+            # Perform image to text conversion with LayoutLM Document QA
+            if st.button("Convert Image to Text"):
+                result = image_to_text_with_layoutlm(image_content, question)
+                st.subheader("Text Extracted:")
+                st.write(result)
+        except Exception as e:
+            st.error(f"An error occurred: {str(e)}")
 
 if __name__ == "__main__":
     main()
