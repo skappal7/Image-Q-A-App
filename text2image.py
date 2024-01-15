@@ -50,12 +50,15 @@ def main():
                 result = image_to_text_with_layoutlm(image_content, question)
 
                 # Display the extracted answers
-                if 'answers' in result:
+                if 'answers' in result and isinstance(result['answers'], list):
                     answers = result['answers']
                     if answers:
                         st.subheader("Answers:")
                         for i, answer in enumerate(answers):
-                            st.write(f"{i + 1}. {answer['text']}")
+                            if 'text' in answer and isinstance(answer['text'], str):
+                                st.write(f"{i + 1}. {answer['text']}")
+                            else:
+                                st.warning("Invalid answer format.")
                     else:
                         st.warning("No answers found.")
                 else:
