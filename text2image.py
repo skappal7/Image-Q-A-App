@@ -53,15 +53,17 @@ def main():
                 st.write("Full JSON Response:")
                 st.write(result)
 
-                # Extract relevant information from the JSON response
-                if 'answers' in result and result['answers']:
-                    extracted_text = result['answers'][0]['text']
-                    confidence = result['answers'][0]['confidence']
-                    st.subheader("Text Extracted:")
-                    st.write(f"Extracted Text: {extracted_text}")
-                    st.write(f"Confidence: {confidence}")
+                # Display the relevant information from the JSON response
+                if 'answers' in result:
+                    answers = result['answers']
+                    if answers:
+                        st.subheader("Answers:")
+                        for i, answer in enumerate(answers):
+                            st.write(f"{i + 1}. {answer['text']}")
+                    else:
+                        st.warning("No answers found.")
                 else:
-                    st.warning("No answers found.")
+                    st.warning("Invalid response format.")
         except Exception as e:
             st.error(f"An error occurred: {str(e)}")
 
